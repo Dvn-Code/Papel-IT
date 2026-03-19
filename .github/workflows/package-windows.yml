@@ -34,7 +34,7 @@ jobs:
             --main-jar papelit-1.0.0.jar `
             --main-class com.example.papelit.StickyNotesLauncher `
             --input target/libs `
-            --icon src/main/resources/icon.icon `
+            --icon src/main/resources/icon.ico `
             --win-dir-chooser `
             --win-shortcut `
             --win-menu `
