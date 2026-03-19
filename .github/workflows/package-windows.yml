@@ -22,15 +22,18 @@ jobs:
       - name: Build with Maven
         run: mvn clean package -DskipTests
 
-      - name: Create Windows EXE Installer
+      - name: Create Windows Versions
         run: |
           mkdir target/jpackage
+          
+          # 1. Create the Professional EXE Installer
           jpackage `
             --type exe `
             --dest target/jpackage `
-            --name "Papel IT" `
+            --name "Papel-IT-Installer" `
             --app-version 1.0.0 `
             --vendor "PapelIT" `
+            --copyright "Copyright (C) 2026 PapelIT" `
             --main-jar papelit-1.0.0.jar `
             --main-class com.example.papelit.StickyNotesLauncher `
             --input target/libs `
@@ -38,11 +41,26 @@ jobs:
             --win-dir-chooser `
             --win-shortcut `
             --win-menu `
-            --description "Papel IT - A beautiful sticky notes application"
+            --description "Papel IT Installer"
+            
+          # 2. Create the Portable App Image (Folder)
+          jpackage `
+            --type app-image `
+            --dest target/jpackage `
+            --name "Papel-IT-Portable" `
+            --main-jar papelit-1.0.0.jar `
+            --main-class com.example.papelit.StickyNotesLauncher `
+            --input target/libs `
+            --icon src/main/resources/icon.ico
+            
+          # 3. Zip up the Portable Version
+          Compress-Archive -Path target/jpackage/Papel-IT-Portable -DestinationPath target/jpackage/Papel-IT-Portable-Windows.zip
         shell: pwsh
 
-      - name: Upload Installer
+      - name: Upload Artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: Papel-IT-Windows-Installer
-          path: target/jpackage/*.exe
+          name: Papel-IT-Windows-Releases
+          path: |
+            target/jpackage/*.exe
+            target/jpackage/*.zip
