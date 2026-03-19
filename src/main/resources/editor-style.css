@@ -1,0 +1,16 @@
+html, body {
+    background-color: transparent !important;
+    background: transparent !important;
+    font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
+    font-size: 14px;
+    color: #111111;
+    line-height: 1.5;
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+}
+
+/* Ensure selected text is visible */
+::selection {
+    background: rgba(0, 0, 0, 0.1);
+}
