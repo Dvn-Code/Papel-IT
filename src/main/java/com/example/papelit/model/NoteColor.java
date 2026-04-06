@@ -1,5 +1,6 @@
 package com.example.papelit.model;
 
+//This is the color that the user will be able to  choose
 public enum NoteColor {
     PINK("#FFC9C9"),
     PEACH("#FFD8A8"),

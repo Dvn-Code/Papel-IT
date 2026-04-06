@@ -29,6 +29,7 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
+// The home or the first window to appear when the user open the Application
 public class DashboardWindow extends Stage {
     private final NoteDAO noteDAO = new NoteDAO();
     private final PreferencesDAO prefsDAO = new PreferencesDAO();

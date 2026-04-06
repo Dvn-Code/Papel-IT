@@ -1,5 +1,6 @@
 package com.example.papelit.model;
 
+// This is where the setting or the preferences of the user to be saved
 public class UserPreferences {
     private String theme;
     private int autoSaveInterval;

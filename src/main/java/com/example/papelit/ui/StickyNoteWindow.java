@@ -32,6 +32,7 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.util.Duration;
 
+// The window where the user can edit or make the notes
 public class StickyNoteWindow extends Stage {
     private final Note note;
     private final DashboardWindow dashboard;

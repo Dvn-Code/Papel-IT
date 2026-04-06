@@ -11,6 +11,7 @@ import java.util.List;
 
 import com.example.papelit.model.Note;
 
+//This is the DataBase that will manage the saved notes
 public class NoteDAO {
     public void insertNote(Note note) {
         String sql = "INSERT INTO notes (title, content, last_modified, x, y, width, height, is_open, always_on_top, color, tag) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
