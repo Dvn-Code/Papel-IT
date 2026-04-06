@@ -48,13 +48,11 @@ public class DashboardWindow extends Stage {
         preferences = prefsDAO.getPreferences();
         setTitle("Papel IT");
         
-        // 60% Width and 50% Height based on screen resolution
         double screenW = Screen.getPrimary().getVisualBounds().getWidth();
         double screenH = Screen.getPrimary().getVisualBounds().getHeight();
         setMinWidth(screenW * 0.60);
         setMinHeight(screenH * 0.50);
         
-        // Final Polish: Set the taskbar/dock icon
         try {
             var iconRes = getClass().getResource("/icon.png");
             if (iconRes != null) getIcons().add(new Image(iconRes.toExternalForm()));
@@ -63,13 +61,12 @@ public class DashboardWindow extends Stage {
         allNotes = FXCollections.observableArrayList(noteDAO.getAllNotes());
         filteredNotes = FXCollections.observableArrayList();
 
-        setupUI(); // Build the UI first
-        updateFilter(); // THEN sort and filter once components exist
-        refreshGrid(); // Finally show the notes
+        setupUI();
+        updateFilter();
+        refreshGrid();
 
         setOnCloseRequest(e -> {
             shutdown();
-            // We use Platform.runLater to check for exit AFTER the window is hidden
             Platform.runLater(StickyNotesApp::checkWindowsAndExit);
         });
 
@@ -83,7 +80,6 @@ public class DashboardWindow extends Stage {
 
         BorderPane mainLayout = new BorderPane();
 
-        // --- Sidebar ---
         VBox sidebar = new VBox(15);
         sidebar.getStyleClass().add("sidebar");
         sidebar.setPadding(new Insets(30, 20, 30, 20));
@@ -134,7 +130,6 @@ public class DashboardWindow extends Stage {
         sidebar.getChildren().addAll(logoContainer, new Region(){{setPrefHeight(20);}}, navMenu, navSpacer, newNoteBtn);
         mainLayout.setLeft(sidebar);
 
-        // --- Main Dashboard Area ---
         VBox mainContent = new VBox(25);
         mainContent.setPadding(new Insets(40));
         mainLayout.setCenter(mainContent);
@@ -154,7 +149,6 @@ public class DashboardWindow extends Stage {
         StackPane.setAlignment(searchIcon, Pos.CENTER_LEFT);
         StackPane.setMargin(searchIcon, new Insets(0, 0, 0, 15));
 
-        // Centered Search Row
         HBox searchRow = new HBox(searchContainer);
         searchRow.setAlignment(Pos.CENTER);
 
@@ -168,7 +162,6 @@ public class DashboardWindow extends Stage {
         ScrollPane scroll = new ScrollPane(notesGrid);
         scroll.setFitToWidth(true);
         scroll.getStyleClass().add("no-border-scroll");
-        // Re-aligned to the left as requested
         notesGrid.setAlignment(Pos.TOP_LEFT);
         scroll.widthProperty().addListener((obs, oldW, newW) -> {
             notesGrid.setPrefWrapLength(newW.doubleValue() - 40);
@@ -200,7 +193,6 @@ public class DashboardWindow extends Stage {
             if (matchesSearch && matchesTag) filteredNotes.add(note);
         }
         
-        // --- Sorting: Pinned first, then by ID (Newest created first) ---
         filteredNotes.sort((n1, n2) -> {
             if (n1.isAlwaysOnTop() != n2.isAlwaysOnTop()) {
                 return n1.isAlwaysOnTop() ? -1 : 1;
@@ -234,7 +226,6 @@ public class DashboardWindow extends Stage {
         notesGrid.getChildren().clear();
         for (Note note : filteredNotes) {
             VBox card = createNoteCard(note);
-            // Bulletproof fixed width
             card.setMinWidth(300);
             card.setPrefWidth(300);
             card.setMaxWidth(300);
@@ -265,7 +256,6 @@ public class DashboardWindow extends Stage {
         }
         inner.setTop(header);
 
-        // Content
         Label content = new Label(stripHtml(note.getContent()));
         content.getStyleClass().add("bento-card-body");
         content.setWrapText(true); 
@@ -275,7 +265,6 @@ public class DashboardWindow extends Stage {
         inner.setCenter(content);
         BorderPane.setAlignment(content, Pos.TOP_LEFT);
 
-        // Footer
         HBox footer = new HBox();
         footer.setPadding(new Insets(10, 20, 20, 20)); 
         footer.setAlignment(Pos.CENTER_LEFT);
@@ -306,12 +295,9 @@ public class DashboardWindow extends Stage {
 
     private String stripHtml(String html) {
         if (html == null) return "";
-        // Remove style and script tags and their content
         String clean = html.replaceAll("(?s)<style>.*?</style>", "")
                           .replaceAll("(?s)<script>.*?</script>", "");
-        // Remove all remaining tags
         clean = clean.replaceAll("<[^>]*>", "");
-        // Replace common entities and clean up whitespace
         return clean.replaceAll("&nbsp;", " ").replaceAll("&lt;", "<").replaceAll("&gt;", ">").trim();
     }
 
@@ -338,7 +324,7 @@ public class DashboardWindow extends Stage {
         note.setTag(currentFilterTag.equalsIgnoreCase("Home") ? "Home" : currentFilterTag);
         noteDAO.insertNote(note);
         allNotes.add(note);
-        updateFilter(); // Re-sort and re-filter immediately
+        updateFilter();
         openNoteWindow(note);
         refreshGrid();
     }
@@ -352,7 +338,6 @@ public class DashboardWindow extends Stage {
         nw.show();
         nw.setOnHidden(evt -> {
             activeWindows.remove(nw);
-            // Check for exit when a note is closed
             Platform.runLater(StickyNotesApp::checkWindowsAndExit);
         });
     }

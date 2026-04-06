@@ -28,6 +28,6 @@ public enum NoteColor {
         for (NoteColor c : values()) {
             if (c.getHex().equalsIgnoreCase(hex)) return c;
         }
-        return PEACH; // Default
+        return PEACH;
     }
 }

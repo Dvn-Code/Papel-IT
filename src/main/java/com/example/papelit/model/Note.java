@@ -14,7 +14,7 @@ public class Note {
     private boolean isOpen;
     private boolean alwaysOnTop;
     private String color;
-    private String tag; // e.g., "Home", "Work", "Personal", "Ideas"
+    private String tag;
 
     public Note() {
         this.title = "New Note";
@@ -27,7 +27,7 @@ public class Note {
         this.isOpen = true;
         this.alwaysOnTop = false;
         this.color = "#FFD166";
-        this.tag = "Home"; // Default tag
+        this.tag = "Home";
     }
 
     public String getTag() { return tag; }

@@ -1,7 +1,10 @@
 package com.example.papelit.ui;
 
+import java.time.LocalDateTime;
+
 import com.example.papelit.model.Note;
 import com.example.papelit.model.NoteColor;
+
 import javafx.animation.FadeTransition;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
@@ -10,18 +13,24 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Scene;
-import javafx.scene.control.*;
-import javafx.scene.layout.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.Separator;
+import javafx.scene.control.TextField;
+import javafx.scene.control.Tooltip;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.Region;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.SVGPath;
+import javafx.scene.web.HTMLEditor;
+import javafx.scene.web.WebEngine;
+import javafx.scene.web.WebView;
+import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
-import javafx.stage.Screen;
-import javafx.scene.web.HTMLEditor;
-import javafx.scene.web.WebView;
-import javafx.scene.web.WebEngine;
 import javafx.util.Duration;
-import java.time.LocalDateTime;
 
 public class StickyNoteWindow extends Stage {
     private final Note note;
@@ -49,13 +58,11 @@ public class StickyNoteWindow extends Stage {
         setMinWidth(MIN_WIDTH);
         setMinHeight(MIN_HEIGHT);
         
-        // Final Polish: Set the taskbar/dock icon
         try {
             var iconRes = getClass().getResource("/icon.png");
             if (iconRes != null) getIcons().add(new javafx.scene.image.Image(iconRes.toExternalForm()));
         } catch (Exception ignored) {}
         
-        // 60-65% Max Height Cap based on screen resolution
         double screenH = Screen.getPrimary().getVisualBounds().getHeight();
         setMaxHeight(screenH * 0.65);
 
@@ -79,7 +86,6 @@ public class StickyNoteWindow extends Stage {
             saveNoteContent();
             note.setOpen(false);
             dashboard.saveNote(note);
-            // CHECK FOR EXIT: If this was the last window (even if dashboard is closed), shutdown.
             Platform.runLater(com.example.papelit.StickyNotesApp::checkWindowsAndExit);
         });
     }
@@ -88,11 +94,9 @@ public class StickyNoteWindow extends Stage {
         root = new VBox(0);
         root.getStyleClass().add("note-window-root");
         
-        // Initial Background Style
         NoteColor nc = NoteColor.fromHex(note.getColor());
         root.getStyleClass().add(nc.getCssClassName());
 
-        // --- TOP: Header + Toolbars ---
         HBox header = new HBox(12);
         header.setPadding(new Insets(16, 16, 0, 16));
         header.setAlignment(Pos.CENTER_LEFT);
@@ -153,7 +157,6 @@ public class StickyNoteWindow extends Stage {
 
         formatBar.getChildren().addAll(boldBtn, italicBtn, new Separator(), colorPicker, filler, tagCombo);
 
-        // --- MIDDLE: HTMLEditor ---
         htmlEditor = new HTMLEditor();
         htmlEditor.getStyleClass().add("html-editor");
         htmlEditor.setHtmlText(note.getContent() != null ? note.getContent() : "");
@@ -195,13 +198,11 @@ public class StickyNoteWindow extends Stage {
     public void applyNoteColor(NoteColor selectedColor) {
         if (root == null || selectedColor == null) return;
         
-        // 1. Apply to root container (JavaFX)
         root.getStyleClass().removeIf(s -> s.startsWith("note-color-"));
         root.getStyleClass().add(selectedColor.getCssClassName());
         note.setColor(selectedColor.getHex());
         dashboard.saveNote(note);
         
-        // 2. Inject CSS Style tag for permanent color matching (Master Prompt method)
         if (editorWebEngine != null) {
             String script = String.format(
                 "var style = document.getElementById('noteEditorBackgroundColorStyle');" +
@@ -282,7 +283,6 @@ public class StickyNoteWindow extends Stage {
     public void saveNoteContent() { 
         if(htmlEditor != null) {
             String html = htmlEditor.getHtmlText();
-            // SANITIZER: Strip out the injected style tag before saving to prevent polluted previews
             if (html != null) {
                 html = html.replaceAll("(?s)<style id=\"noteEditorBackgroundColorStyle\">.*?</style>", "");
                 html = html.replaceAll("style=\"background-color: [^;]*;\"", "");
